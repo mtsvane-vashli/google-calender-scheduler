@@ -7,6 +7,11 @@ import os.path
 
 SCOPES = ['https://www.googleapis.com/auth/calendar']  # 書き込み権限
 
+color = {c: 1,
+        k: 2,
+        m: 3
+        }
+
 def get_credentials():
     creds = None
     if os.path.exists('token.json'):
@@ -82,10 +87,10 @@ def main():
             
                 # 重複なしなら追加
                 new_event = {
-                    'summary': f"[コピー] {summary}",
+                    'summary': f"{summary}",
                     'start': start,
                     'end': end,
-                    'description': '自動転送イベント',
+                    'colorId': color[c]
                 }
             
                 created_event = service.events().insert(
