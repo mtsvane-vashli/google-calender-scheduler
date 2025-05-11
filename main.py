@@ -21,6 +21,21 @@ def get_credentials():
             token.write(creds.to_json())
     return creds
 
+def is_duplicate(service, summary, start_time, end_time):
+    # 自分のカレンダーから、同じ時間帯のイベントを検索
+    events = service.events().list(
+        calendarId='primary',
+        timeMin=start_time,
+        timeMax=end_time,
+        singleEvents=True
+    ).execute().get('items', [])
+
+    for e in events:
+        if e.get('summary') == f"[コピー] {summary}":
+            return True
+    return False
+
+
 def main():
     creds = get_credentials()
     service = build('calendar', 'v3', credentials=creds)
@@ -56,21 +71,30 @@ def main():
                 start = event['start']
                 end = event['end']
                 summary = event.get('summary', '無題イベント')
-
-                # ✅ 自分のカレンダーにコピー
+            
+                start_time = start.get('dateTime', start.get('date'))
+                end_time = end.get('dateTime', end.get('date'))
+            
+                # 重複チェックを実施
+                if is_duplicate(service, summary, start_time, end_time):
+                    print(f"⛔ スキップ（既存）: {summary} ({start_time})")
+                    continue
+            
+                # 重複なしなら追加
                 new_event = {
                     'summary': f"[コピー] {summary}",
                     'start': start,
                     'end': end,
-                    'description': f"元カレンダー: {calendar_id}"
+                    'description': '自動転送イベント',
                 }
-
+            
                 created_event = service.events().insert(
                     calendarId='primary',
                     body=new_event
                 ).execute()
-
+            
                 print(f"✅ 追加: {created_event.get('summary')} → {created_event.get('htmlLink')}")
+
 
         except Exception as e:
             print(f"⚠️ エラー（{calendar_id}）: {e}")
