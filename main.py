@@ -26,8 +26,8 @@ def get_credentials():
             token.write(creds.to_json())
     return creds
 
-def is_duplicate(service, summary, start_time, end_time):
-    # 自分のカレンダーから、同じ時間帯のイベントを検索
+def find_existing_event(service, start_time, end_time):
+    """完全に同じ開始・終了時間のイベントがあればそのIDを返す"""
     events = service.events().list(
         calendarId='primary',
         timeMin=start_time,
@@ -35,10 +35,12 @@ def is_duplicate(service, summary, start_time, end_time):
         singleEvents=True
     ).execute().get('items', [])
 
-    for e in events:
-        if e.get('summary') == f"{summary}":
-            return True
-    return False
+    for event in events:
+        existing_start = event['start'].get('dateTime', event['start'].get('date'))
+        existing_end = event['end'].get('dateTime', event['end'].get('date'))
+        if existing_start == start_time and existing_end == end_time:
+            return event.get('id')  # 上書き対象
+    return None
 
 
 def main():
@@ -73,32 +75,33 @@ def main():
                 continue
 
             for event in events:
-                start = event['start']
-                end = event['end']
-                summary = event.get('summary', '無題イベント')
-            
                 start_time = start.get('dateTime', start.get('date'))
                 end_time = end.get('dateTime', end.get('date'))
-            
-                # 重複チェックを実施
-                if is_duplicate(service, summary, start_time, end_time):
-                    print(f"⛔ スキップ（既存）: {summary} ({start_time})")
-                    continue
-            
-                # 重複なしなら追加
+                
+                existing_id = find_existing_event(service, start_time, end_time)
+                
                 new_event = {
-                    'summary': f"{summary}",
+                    'summary': f"[コピー] {summary}",
                     'start': start,
                     'end': end,
-                    'colorId': color[calendar_id]
+                    'description': f"元カレンダー: {calendar_id}",
+                    'colorId': source_color_id
                 }
-            
-                created_event = service.events().insert(
-                    calendarId='primary',
-                    body=new_event
-                ).execute()
-            
-                print(f"✅ 追加: {created_event.get('summary')} → {created_event.get('htmlLink')}")
+                
+                if existing_id:
+                    updated_event = service.events().update(
+                        calendarId='primary',
+                        eventId=existing_id,
+                        body=new_event
+                    ).execute()
+                    print(f"🔄 上書き（時間一致）: {updated_event.get('summary')} → {updated_event.get('htmlLink')}")
+                else:
+                    created_event = service.events().insert(
+                        calendarId='primary',
+                        body=new_event
+                    ).execute()
+                    print(f"✅ 新規追加: {created_event.get('summary')} → {created_event.get('htmlLink')}")
+
 
 
         except Exception as e:
