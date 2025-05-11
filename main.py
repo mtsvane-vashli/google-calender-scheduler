@@ -75,6 +75,9 @@ def main():
                 continue
 
             for event in events:
+                summary = event.get('summary', '無題イベント')
+                start = event['start']
+                end = event['end']
                 start_time = start.get('dateTime', start.get('date'))
                 end_time = end.get('dateTime', end.get('date'))
                 
