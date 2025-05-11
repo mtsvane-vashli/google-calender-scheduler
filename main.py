@@ -7,9 +7,9 @@ import os.path
 
 SCOPES = ['https://www.googleapis.com/auth/calendar']  # 書き込み権限
 
-color = {c: 1,
-        k: 2,
-        m: 3
+color = {'c': '1',
+        'k': '2',
+        'm': '3'
         }
 
 def get_credentials():
