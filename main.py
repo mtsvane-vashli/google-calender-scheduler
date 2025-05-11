@@ -63,7 +63,6 @@ def main():
             events_result = service.events().list(
                 calendarId=calendar_id,
                 timeMin=now,
-                maxResults=5,
                 singleEvents=True,
                 orderBy='startTime',
                 q=query
