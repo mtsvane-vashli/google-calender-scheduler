@@ -31,7 +31,7 @@ def is_duplicate(service, summary, start_time, end_time):
     ).execute().get('items', [])
 
     for e in events:
-        if e.get('summary') == f"[コピー] {summary}":
+        if e.get('summary') == f"{summary}":
             return True
     return False
 
