@@ -84,11 +84,10 @@ def main():
                 existing_id = find_existing_event(service, start_time, end_time)
                 
                 new_event = {
-                    'summary': f"[コピー] {summary}",
+                    'summary': f"{summary}",
                     'start': start,
                     'end': end,
-                    'description': f"元カレンダー: {calendar_id}",
-                    'colorId': source_color_id
+                    'colorId': color[calendar_id]
                 }
                 
                 if existing_id:
