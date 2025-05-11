@@ -7,9 +7,9 @@ import os.path
 
 SCOPES = ['https://www.googleapis.com/auth/calendar']  # 書き込み権限
 
-color = {'c': '1',
-        'k': '2',
-        'm': '3'
+color = {'2o5suvn6j21dvm4u23jqmgs8nc@group.calendar.google.com': '1',
+        '70ae7cc54fb7d0f2721fe617f26c2baf05cac34711cc7b7f9cd520167b6ce6cb@group.calendar.google.com': '2',
+        'c_1cb8ae71bd956592935f22f3a4b9bbcf117b442158fe501c5343a46e38f2dee1@group.calendar.google.com': '3'
         }
 
 def get_credentials():
@@ -90,7 +90,7 @@ def main():
                     'summary': f"{summary}",
                     'start': start,
                     'end': end,
-                    'colorId': color[c]
+                    'colorId': color[calendar_id]
                 }
             
                 created_event = service.events().insert(
