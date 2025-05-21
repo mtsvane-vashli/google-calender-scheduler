@@ -88,7 +88,7 @@ def main():
                 existing_id = find_existing_event(service, start_time, end_time)
                 
                 new_event = {
-                    'summary': f"{name[calender_id]}{summary}",
+                    'summary': f"{name[calendar_id]}{summary}",
                     'start': start,
                     'end': end,
                     'colorId': color[calendar_id]
