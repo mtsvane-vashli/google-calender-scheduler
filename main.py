@@ -12,6 +12,11 @@ color = {'2o5suvn6j21dvm4u23jqmgs8nc@group.calendar.google.com': '6',
         'c_1cb8ae71bd956592935f22f3a4b9bbcf117b442158fe501c5343a46e38f2dee1@group.calendar.google.com': '9'
         }
 
+name = {'2o5suvn6j21dvm4u23jqmgs8nc@group.calendar.google.com': '筑前前原校',
+        '70ae7cc54fb7d0f2721fe617f26c2baf05cac34711cc7b7f9cd520167b6ce6cb@group.calendar.google.com': '唐津校',
+        'c_1cb8ae71bd956592935f22f3a4b9bbcf117b442158fe501c5343a46e38f2dee1@group.calendar.google.com': '姪浜校'
+        }
+
 def get_credentials():
     creds = None
     if os.path.exists('token.json'):
@@ -83,7 +88,7 @@ def main():
                 existing_id = find_existing_event(service, start_time, end_time)
                 
                 new_event = {
-                    'summary': f"{summary}",
+                    'summary': f"{name[calender_id]}{summary}",
                     'start': start,
                     'end': end,
                     'colorId': color[calendar_id]
